@@ -1,18 +1,22 @@
-const mongoose = require('mongoose');
-const User = mongoose.model('User');
-const Workout = mongoose.model('Workout');
-const WorkoutSet = mongoose.model('WorkoutSet');
-const Exercise = mongoose.model('Exercise');
+const mongoose = require("mongoose");
+const User = mongoose.model("User");
+const Workout = mongoose.model("Workout");
+const WorkoutSet = mongoose.model("WorkoutSet");
+const Exercise = mongoose.model("Exercise");
 
-const createWorkout = async data => {
+const createWorkout = async (data) => {
   try {
     const { userId, routineId, start } = data;
 
-    const workout = await Workout.create({ user: userId, routine: routineId, start });
+    const workout = await Workout.create({
+      user: userId,
+      routine: routineId,
+      start,
+    });
 
     const user = await User.findById(userId);
 
-    if (!user) throw new Error('There is no user with that ID');
+    if (!user) throw new Error("There is no user with that ID");
 
     user.workouts.push(workout);
 
@@ -22,7 +26,7 @@ const createWorkout = async data => {
     user.totalWorkouts[year][month] = user.totalWorkouts[year][month] + 1;
     user.totalWorkouts._count = user.totalWorkouts._count + 1;
 
-    user.markModified('totalWorkouts');
+    user.markModified("totalWorkouts");
 
     await user.save();
 
@@ -32,12 +36,16 @@ const createWorkout = async data => {
   }
 };
 
-const finishWorkout = async data => {
+const finishWorkout = async (data) => {
   const { workoutId, end } = data;
+
+  console.log(data);
 
   const workout = await Workout.findById(workoutId);
   workout.end = end;
   await workout.save();
+
+  console.log("workout", workout);
 
   return {
     id: workout.id,
