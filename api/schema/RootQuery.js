@@ -56,7 +56,7 @@ const RootQuery = new GraphQLObjectType({
         if (muscle)
           return Exercise.find({ muscles: mongoose.Types.ObjectId(muscle) });
 
-        return Exercise.find({}).limit(10);
+        return Exercise.find({});
       },
     },
     exercise: {
