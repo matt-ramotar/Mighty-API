@@ -1,18 +1,29 @@
-const mongoose = require('mongoose');
-const graphql = require('graphql');
+const mongoose = require("mongoose");
+const graphql = require("graphql");
 
-const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLList, GraphQLInt, GraphQLBoolean } = graphql;
-const { GraphQLDate, GraphQLTime, GraphQLDateTime } = require('graphql-iso-date');
-const { GraphQLJSON } = require('graphql-type-json');
+const {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLID,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+} = graphql;
+const {
+  GraphQLDate,
+  GraphQLTime,
+  GraphQLDateTime,
+} = require("graphql-iso-date");
+const { GraphQLJSON } = require("graphql-type-json");
 
-const User_Type = require('./User_Type');
-const Exercise_Type = require('./Exercise_Type');
-const WorkoutSet = mongoose.model('WorkoutSet');
-const User = mongoose.model('User');
-const Exercise = mongoose.model('Exercise');
+const User_Type = require("./User_Type");
+const Exercise_Type = require("./Exercise_Type");
+const WorkoutSet = mongoose.model("WorkoutSet");
+const User = mongoose.model("User");
+const Exercise = mongoose.model("Exercise");
 
 const WorkoutSet_Type = new GraphQLObjectType({
-  name: 'WorkoutSet',
+  name: "WorkoutSet",
   fields: () => ({
     id: { type: GraphQLID },
     reps: { type: GraphQLInt },
@@ -32,13 +43,14 @@ const WorkoutSet_Type = new GraphQLObjectType({
 
       resolve(parentValue) {
         return Exercise.findById(parentValue.exercise)
-          .then(exercise => exercise)
-          .catch(err => null);
+          .then((exercise) => exercise)
+          .catch((err) => null);
       },
     },
 
     timestamp: { type: GraphQLDateTime },
     personalRecords: { type: GraphQLJSON },
+    gainedXP: { type: GraphQLInt },
   }),
 });
 
