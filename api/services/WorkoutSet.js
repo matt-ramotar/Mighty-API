@@ -4,6 +4,10 @@ const Workout = mongoose.model("Workout");
 const WorkoutSet = mongoose.model("WorkoutSet");
 const Exercise = mongoose.model("Exercise");
 
+const prefixWithZeroIfSingleDigit = (integer) => {
+  return integer < 10 ? `0${integer}` : `${integer}`;
+};
+
 const createWorkoutSet = async (data) => {
   try {
     const { reps, pounds, exerciseId, userId, workoutId } = data;
@@ -13,7 +17,9 @@ const createWorkoutSet = async (data) => {
     const month = today.getMonth() + 1;
     const dayOfMonth = today.getDate();
 
-    const todayString = `${month}/${dayOfMonth}/${year}`;
+    const todayString = `${year}-${prefixWithZeroIfSingleDigit(
+      month
+    )}-${prefixWithZeroIfSingleDigit(dayOfMonth)}`;
 
     const workoutSet = new WorkoutSet({
       reps,
@@ -110,11 +116,7 @@ const createWorkoutSet = async (data) => {
     await workout.save();
     await workoutSet.save();
 
-    return {
-      id: workoutSet.id,
-      gainedXP: workoutSet.gainedXP,
-      personalRecords: workoutSet.personalRecords,
-    };
+    return workoutSet;
   } catch (err) {
     console.log(err);
     throw err;
