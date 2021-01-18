@@ -1,18 +1,23 @@
-const mongoose = require('mongoose');
-const User = mongoose.model('User');
-const Workout = mongoose.model('Workout');
-const WorkoutSet = mongoose.model('WorkoutSet');
-const Exercise = mongoose.model('Exercise');
+const mongoose = require("mongoose");
+const User = mongoose.model("User");
+const Workout = mongoose.model("Workout");
+const WorkoutSet = mongoose.model("WorkoutSet");
+const Exercise = mongoose.model("Exercise");
+const Level = mongoose.model("Level");
 
-const newWorkout = async data => {
+const newWorkout = async (data) => {
   try {
     const { userId, routineId, start } = data;
 
-    const workout = await Workout.create({ user: userId, routine: routineId, start });
+    const workout = await Workout.create({
+      user: userId,
+      routine: routineId,
+      start,
+    });
 
     const user = await User.findById(userId);
 
-    if (!user) throw new Error('There is no user with that ID');
+    if (!user) throw new Error("There is no user with that ID");
 
     user.workouts.push(workout);
 
@@ -22,7 +27,7 @@ const newWorkout = async data => {
     user.totalWorkouts[year][month] = user.totalWorkouts[year][month] + 1;
     user.totalWorkouts._count = user.totalWorkouts._count + 1;
 
-    user.markModified('totalWorkouts');
+    user.markModified("totalWorkouts");
 
     await user.save();
 
@@ -32,7 +37,7 @@ const newWorkout = async data => {
   }
 };
 
-const newWorkoutSet = async data => {
+const newWorkoutSet = async (data) => {
   try {
     const { reps, pounds, exerciseId, userId, workoutId } = data;
 
@@ -56,7 +61,7 @@ const newWorkoutSet = async data => {
     const exercise = await Exercise.findById(exerciseId);
 
     exercise.summaryStatistics.counts._sets += 1;
-    exercise.markModified('summaryStatistics');
+    exercise.markModified("summaryStatistics");
     await exercise.save();
 
     const exerciseName = exercise.name;
@@ -89,14 +94,14 @@ const newWorkoutSet = async data => {
 
     user.summaryStatistics = summaryStatistics;
 
-    user.markModified('summaryStatistics');
+    user.markModified("summaryStatistics");
     await user.save();
 
     const workout = await Workout.findById(workoutId);
     workout.sets.push(workoutSet);
     if (Object.keys(personalRecords).length) {
       workoutSet.personalRecords = personalRecords;
-      workoutSet.markModified('personalRecords');
+      workoutSet.markModified("personalRecords");
       await workoutSet.save();
       workout.personalRecords.push(workoutSet);
     }
@@ -110,7 +115,7 @@ const newWorkoutSet = async data => {
   }
 };
 
-const finishWorkout = async data => {
+const finishWorkout = async (data) => {
   const { workoutId, end } = data;
 
   const workout = await Workout.findById(workoutId);
@@ -126,7 +131,7 @@ const finishWorkout = async data => {
   };
 };
 
-const updateXP = async data => {
+const updateXP = async (data) => {
   const { xp, userId } = data;
 
   const user = await User.findById(userId);
@@ -136,4 +141,9 @@ const updateXP = async data => {
   return { id: userId, xp: user.xp };
 };
 
-module.exports = { newWorkout, newWorkoutSet, finishWorkout, updateXP };
+module.exports = {
+  newWorkout,
+  newWorkoutSet,
+  finishWorkout,
+  updateXP,
+};
