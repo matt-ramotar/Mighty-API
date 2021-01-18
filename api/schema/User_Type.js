@@ -1,19 +1,26 @@
-const mongoose = require('mongoose');
-const graphql = require('graphql');
+const mongoose = require("mongoose");
+const graphql = require("graphql");
 
-const { GraphQLJSON } = require('graphql-type-json');
+const { GraphQLJSON } = require("graphql-type-json");
 
-const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLList, GraphQLBoolean, GraphQLInt } = graphql;
-const Workout_Type = require('./Workout_Type');
-const Routine_Type = require('./Routine_Type');
-const WorkoutSet_Type = require('./WorkoutSet_Type');
-const Badge_Type = require('./Badge_Type');
-const Level_Type = require('./Level_Type');
-const User = mongoose.model('User');
-const Level = mongoose.model('Level');
+const {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLID,
+  GraphQLList,
+  GraphQLBoolean,
+  GraphQLInt,
+} = graphql;
+const Workout_Type = require("./Workout_Type");
+const Routine_Type = require("./Routine_Type");
+const WorkoutSet_Type = require("./WorkoutSet_Type");
+const Badge_Type = require("./Badge_Type");
+const Level_Type = require("./Level_Type");
+const User = mongoose.model("User");
+const Level = mongoose.model("Level");
 
 const User_Type = new GraphQLObjectType({
-  name: 'User',
+  name: "User",
 
   fields: () => ({
     id: { type: GraphQLID },
@@ -33,8 +40,8 @@ const User_Type = new GraphQLObjectType({
       type: GraphQLList(Workout_Type),
       resolve(parentValue) {
         return User.findById(parentValue.id)
-          .populate('workouts')
-          .then(user => user.workouts);
+          .populate("workouts")
+          .then((user) => user.workouts);
       },
     },
 
@@ -42,8 +49,8 @@ const User_Type = new GraphQLObjectType({
       type: GraphQLList(Routine_Type),
       resolve(parentValue) {
         return User.findById(parentValue.id)
-          .populate('routinesFollowing')
-          .then(user => user.routinesFollowing);
+          .populate("routinesFollowing")
+          .then((user) => user.routinesFollowing);
       },
     },
 
@@ -51,8 +58,8 @@ const User_Type = new GraphQLObjectType({
       type: GraphQLList(Routine_Type),
       resolve(parentValue) {
         return User.findById(parentValue.id)
-          .populate('routinesAuthored')
-          .then(user => user.routinesAuthored);
+          .populate("routinesAuthored")
+          .then((user) => user.routinesAuthored);
       },
     },
 
@@ -60,8 +67,8 @@ const User_Type = new GraphQLObjectType({
       type: GraphQLList(WorkoutSet_Type),
       resolve(parentValue) {
         return User.findById(parentValue.id)
-          .populate('workoutSets')
-          .then(user => user.workoutSets);
+          .populate("workoutSets")
+          .then((user) => user.workoutSets);
       },
     },
 
@@ -71,8 +78,8 @@ const User_Type = new GraphQLObjectType({
       type: Level_Type,
       resolve(parentValue) {
         return Level.findById(parentValue.level)
-          .then(level => level)
-          .catch(err => null);
+          .then((level) => level)
+          .catch((err) => null);
       },
     },
 
@@ -80,11 +87,13 @@ const User_Type = new GraphQLObjectType({
       type: GraphQLList(Badge_Type),
       resolve(parentValue) {
         return User.findById(parentValue.id)
-          .populate('badges')
-          .then(user => user.badges);
+          .populate("badges")
+          .then((user) => user.badges);
       },
     },
     summaryStatistics: { type: GraphQLJSON },
+
+    xpHeatMap: { type: GraphQLJSON },
 
     totalPounds: { type: GraphQLInt },
     totalWorkouts: { type: GraphQLJSON },
