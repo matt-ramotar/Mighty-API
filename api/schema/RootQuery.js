@@ -8,6 +8,7 @@ const {
   GraphQLNonNull,
   GraphQLBoolean,
 } = graphql;
+const { GraphQLJSON } = require("graphql-type-json");
 
 const Author_Type = require("./Author_Type");
 const Equipment_Type = require("./Equipment_Type");
@@ -20,7 +21,7 @@ const Program_Type = require("./Program_Type");
 const Routine_Type = require("./Routine_Type");
 const Workout_Type = require("./Workout_Type");
 const Level_Type = require("./Level_Type");
-const { default: GraphQLJSON } = require("graphql-type-json");
+const WorkoutSet_Type = require("./WorkoutSet_Type");
 
 const Author = mongoose.model("Author");
 const Exercise = mongoose.model("Exercise");
@@ -33,6 +34,7 @@ const Program = mongoose.model("Program");
 const Routine = mongoose.model("Routine");
 const Workout = mongoose.model("Workout");
 const Level = mongoose.model("Level");
+const WorkoutSet = mongoose.model("WorkoutSet");
 
 const RootQuery = new GraphQLObjectType({
   name: "RootQuery",
@@ -166,6 +168,21 @@ const RootQuery = new GraphQLObjectType({
       args: { id: { type: new GraphQLNonNull(GraphQLID) } },
       resolve(parentValue, { id }) {
         return Workout.findById(id);
+      },
+    },
+
+    workoutSet: {
+      type: WorkoutSet_Type,
+      args: { id: { type: new GraphQLNonNull(GraphQLID) } },
+      resolve(parentValue, { id }) {
+        return WorkoutSet.findById(id);
+      },
+    },
+
+    workoutSets: {
+      type: new GraphQLList(WorkoutSet_Type),
+      resolve() {
+        return WorkoutSet.find({});
       },
     },
 
