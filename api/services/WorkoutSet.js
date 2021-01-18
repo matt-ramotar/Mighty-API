@@ -1,14 +1,21 @@
-const mongoose = require('mongoose');
-const User = mongoose.model('User');
-const Workout = mongoose.model('Workout');
-const WorkoutSet = mongoose.model('WorkoutSet');
-const Exercise = mongoose.model('Exercise');
+const mongoose = require("mongoose");
+const User = mongoose.model("User");
+const Workout = mongoose.model("Workout");
+const WorkoutSet = mongoose.model("WorkoutSet");
+const Exercise = mongoose.model("Exercise");
 
-const createWorkoutSet = async data => {
+const createWorkoutSet = async (data) => {
   try {
     const { reps, pounds, exerciseId, userId, workoutId } = data;
 
-    const workoutSet = await WorkoutSet.create({
+    const today = new Date();
+    const year = today.getYear() - 100 + 2000;
+    const month = today.getMonth() + 1;
+    const dayOfMonth = today.getDate();
+
+    const todayString = `${month}/${dayOfMonth}/${year}`;
+
+    const workoutSet = new WorkoutSet({
       reps,
       pounds,
       workout: workoutId,
@@ -19,6 +26,8 @@ const createWorkoutSet = async data => {
     const user = await User.findById(userId);
     await user.workoutSets.push(workoutSet);
 
+    user.markModified("workoutSets");
+
     // Total # of pounds lifted
 
     user.totalPounds = user.totalPounds + reps * pounds;
@@ -28,7 +37,7 @@ const createWorkoutSet = async data => {
     const exercise = await Exercise.findById(exerciseId);
 
     exercise.summaryStatistics.counts._sets += 1;
-    exercise.markModified('summaryStatistics');
+    exercise.markModified("summaryStatistics");
     await exercise.save();
 
     const exerciseName = exercise.name;
@@ -61,23 +70,53 @@ const createWorkoutSet = async data => {
 
     user.summaryStatistics = summaryStatistics;
 
-    user.markModified('summaryStatistics');
+    // Update user heat map
+
+    const nextXPHeatMap = user.xpHeatMap || {};
+
+    const gainedXP = exercise.xp + Object.keys(personalRecords).length;
+
+    console.log("gained xp", gainedXP);
+
+    todayString in nextXPHeatMap
+      ? (nextXPHeatMap[todayString] += gainedXP)
+      : (nextXPHeatMap[todayString] = gainedXP);
+
+    user.xpHeatMap = nextXPHeatMap;
+
+    // Update user XP
+
+    user.xp += gainedXP;
+
+    // Update workoutSet gained xp
+
+    workoutSet.gainedXP
+      ? (workoutSet.gainedXP += gainedXP)
+      : (workoutSet.gainedXP = gainedXP);
+
+    user.markModified("summaryStatistics");
+    user.markModified("xpHeatMap");
     await user.save();
 
     const workout = await Workout.findById(workoutId);
     workout.sets.push(workoutSet);
-    if (Object.keys(personalRecords).length) {
+    if (Object.keys(personalRecords).length > 0) {
       workoutSet.personalRecords = personalRecords;
-      workoutSet.markModified('personalRecords');
-      await workoutSet.save();
+      workoutSet.markModified("personalRecords");
+
       workout.personalRecords.push(workoutSet);
     }
 
     await workout.save();
     await workoutSet.save();
 
-    return { id: workoutSet.id, personalRecords };
+    return {
+      id: workoutSet.id,
+      gainedXP: workoutSet.gainedXP,
+      personalRecords: workoutSet.personalRecords,
+    };
   } catch (err) {
+    console.log(err);
     throw err;
   }
 };
