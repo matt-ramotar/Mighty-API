@@ -72,7 +72,7 @@ UserSchema.pre("save", function (next) {
   next();
 });
 
-UserSchema.pre('save', function (next) {
+UserSchema.pre("save", async function (next) {
   const user = this;
 
   const curLevelNumber = user.level.number;
@@ -87,8 +87,8 @@ UserSchema.pre('save', function (next) {
     user.markModified("level");
   }
 
-  next()
-})
+  next();
+});
 
 UserSchema.methods.comparePassword = function (candidatePassword, cb) {
   bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
