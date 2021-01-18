@@ -1,5 +1,8 @@
-const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+
+const mongoose = require("mongoose");
+const Level = mongoose.model("Level");
+
 const SALT_WORK_FACTOR = 10;
 
 mongoose.set("useCreateIndex", true);
@@ -68,6 +71,24 @@ UserSchema.pre("save", function (next) {
 
   next();
 });
+
+UserSchema.pre('save', function (next) {
+  const user = this;
+
+  const curLevelNumber = user.level.number;
+
+  const nextLevel = await Level.findOne({ number: curLevelNumber + 1 });
+
+  if (nextLevel) {
+    const nextLevelMinXP = nextLevel.minXP;
+
+    if (user.xp >= nextLevelMinXP) user.level = nextLevel;
+
+    user.markModified("level");
+  }
+
+  next()
+})
 
 UserSchema.methods.comparePassword = function (candidatePassword, cb) {
   bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
