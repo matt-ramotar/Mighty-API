@@ -56,9 +56,12 @@ const RootQuery = new GraphQLObjectType({
         if (featured) return Exercise.find({ isFeatured: true });
 
         if (muscle)
-          return Exercise.find({ muscles: mongoose.Types.ObjectId(muscle) });
+          return Exercise.find({
+            muscles: mongoose.Types.ObjectId(muscle),
+            isIncluded: true,
+          });
 
-        return Exercise.find({}).limit(30);
+        return Exercise.find({ isIncluded: true });
       },
     },
     exercise: {
@@ -107,10 +110,21 @@ const RootQuery = new GraphQLObjectType({
 
     users: {
       type: new GraphQLList(User_Type),
-      args: { featured: { type: GraphQLBoolean } },
-      resolve(parentValue, { featured }) {
-        if (featured === undefined) return User.find({});
-        return User.find({ isFeatured: true });
+      args: {
+        featured: { type: GraphQLBoolean },
+        top10: { type: GraphQLString },
+      },
+      async resolve(parentValue, { featured, top10 }) {
+        if (featured) return User.find({ isFeatured: true });
+
+        if (top10 === "XP") {
+          const topUsers = await User.find({}).sort({ xp: -1 }).limit(10);
+          const featuredUsers = await User.find({ isFeatured: true });
+          console.log("featured users", featuredUsers);
+          return [...featuredUsers, ...topUsers];
+        }
+
+        return User.find({});
       },
     },
 
