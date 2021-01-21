@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-mongoose.set('useCreateIndex', true);
+const mongoose = require("mongoose");
+mongoose.set("useCreateIndex", true);
 
 const Schema = mongoose.Schema;
 
@@ -13,19 +13,20 @@ const ExerciseSchema = new Schema({
   },
   exerciseType: {
     type: Schema.Types.ObjectId,
-    ref: 'ExerciseType',
+    ref: "ExerciseType",
   },
   equipment: {
     type: Schema.Types.ObjectId,
-    ref: 'Equipment',
+    ref: "Equipment",
   },
-  instructions: [{ type: Schema.Types.ObjectId, ref: 'Instruction' }],
-  muscles: [{ type: Schema.Types.ObjectId, ref: 'Muscle' }],
+  instructions: [{ type: Schema.Types.ObjectId, ref: "Instruction" }],
+  muscles: [{ type: Schema.Types.ObjectId, ref: "Muscle" }],
 
   xp: { type: Number },
 
   summaryStatistics: { type: Schema.Types.Mixed },
   isFeatured: { type: Boolean },
+  isIncluded: { type: Boolean },
 });
 
-module.exports = mongoose.model('Exercise', ExerciseSchema);
+module.exports = mongoose.model("Exercise", ExerciseSchema);
