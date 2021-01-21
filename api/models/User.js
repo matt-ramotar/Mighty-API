@@ -75,12 +75,15 @@ UserSchema.pre("save", function (next) {
 UserSchema.pre("save", async function (next) {
   const user = this;
 
-  const curLevelNumber = user.level.number;
+  const curLevel = await Level.findById(user.level);
+  const curLevelNumber = curLevel.number;
 
   const nextLevel = await Level.findOne({ number: curLevelNumber + 1 });
 
   if (nextLevel) {
     const nextLevelMinXP = nextLevel.minXP;
+
+    console.log("found next level");
 
     if (user.xp >= nextLevelMinXP) user.level = nextLevel;
 
