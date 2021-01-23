@@ -26,6 +26,7 @@ const mutation = new GraphQLObjectType({
       args: {
         firstName: { type: GraphQLString },
         lastName: { type: GraphQLString },
+        username: { type: GraphQLString },
         email: { type: GraphQLString },
         password: { type: GraphQLString },
       },

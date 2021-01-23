@@ -15,19 +15,60 @@ const signup = async (data) => {
 
     if (!isValid) throw new Error(message);
 
-    const { firstName, lastName, email, password } = data;
+    const { firstName, lastName, username, email, password } = data;
 
-    const existingUser = await User.findOne({ email });
+    const emailAlreadyExists = await User.findOne({ email });
 
-    if (existingUser) throw new Error("This email address is already in use");
+    const usernameAlreadyExists = await User.findOne({ username });
 
-    const user = new User({ firstName, lastName, email, password });
+    if (emailAlreadyExists && usernameAlreadyExists)
+      throw new Error("Email address and username are already in use.");
+
+    if (emailAlreadyExists) throw new Error("Email address already exists.");
+
+    if (usernameAlreadyExists) throw new Error("Username already exists");
+
+    const user = new User({
+      firstName,
+      lastName,
+      username,
+      email,
+      password,
+      xp: 0,
+      level: "5fd966a2c6475b803a702995",
+      isFeatured: false,
+      summaryStatistics: {},
+      xpHeatMap: {},
+      totalPounds: 0,
+      topExercises: {},
+      totalWorkouts: {
+        2021: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+        _count: 0,
+        _chain: [],
+      },
+    });
 
     user.save();
 
     const token = jwt.sign({ id: user._id }, keys);
 
-    return { token, loggedIn: true, ...user._doc, password: null, id: user.id };
+    return {
+      token,
+      id: user.id,
+      isFeatured: user.isFeatured,
+      level: user.level,
+      picture: user.picture,
+      summaryStatistics: user.summaryStatistics,
+      topExercises: user.topExercises,
+      totalPounds: user.totalPounds,
+      totalWorkouts: user.totalWorkouts,
+      xp: user.xp,
+      xpHeatMap: user.xpHeatMap,
+      firstName,
+      lastName,
+      username,
+      email,
+    };
   } catch (err) {
     throw err;
   }
