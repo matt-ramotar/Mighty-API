@@ -89,7 +89,6 @@ const mutation = new GraphQLObjectType({
         firstName: { type: GraphQLString },
         lastName: { type: GraphQLString },
         email: { type: GraphQLString },
-        password: { type: GraphQLString },
         googleId: { type: GraphQLString },
         picture: { type: GraphQLString },
       },
@@ -108,6 +107,20 @@ const mutation = new GraphQLObjectType({
       },
       resolve(_, args) {
         return AuthService.upsertAppleUser(args);
+      },
+    },
+
+    upsertFacebookUser: {
+      type: User_Type,
+      args: {
+        firstName: { type: GraphQLString },
+        lastName: { type: GraphQLString },
+        email: { type: GraphQLString },
+        facebookId: { type: GraphQLString },
+        picture: { type: GraphQLString },
+      },
+      resolve(_, args) {
+        return AuthService.upsertFacebookUser(args);
       },
     },
 
