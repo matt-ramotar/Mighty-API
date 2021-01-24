@@ -18,6 +18,7 @@ const UserSchema = new Schema(
     password: { type: String },
 
     googleId: { type: String },
+    appleId: { type: String },
     picture: { type: String },
 
     workouts: [{ type: Schema.Types.ObjectId, ref: "Workout" }],

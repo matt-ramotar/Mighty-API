@@ -32,6 +32,8 @@ const User_Type = new GraphQLObjectType({
     googleId: { type: GraphQLString },
     picture: { type: GraphQLString },
 
+    appleId: { type: GraphQLString },
+
     token: { type: GraphQLString },
     loggedIn: { type: GraphQLBoolean },
     value: { type: GraphQLJSON },
