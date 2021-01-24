@@ -167,10 +167,69 @@ const upsertGoogleUser = async (data) => {
       await user.save();
     }
 
-    const token = jwt.sign({ id: user.id }, keys);
+    const token = jwt.sign({ id: user._id }, keys);
 
     return { token, loggedIn: true, ...user._doc, id: user.id };
   } catch (err) {
+    return { loggedIn: false };
+  }
+};
+
+const upsertAppleUser = async (data) => {
+  try {
+    const { firstName, lastName, email, appleId } = data;
+
+    let user = await User.findOne({ appleId });
+
+    console.log(user);
+
+    if (!user) {
+      user = new User({
+        firstName,
+        lastName,
+        email,
+        username: email,
+        appleId,
+        xp: 0,
+        level: "5fd966a2c6475b803a702995",
+        isFeatured: false,
+        summaryStatistics: {},
+        xpHeatMap: {},
+        totalPounds: 0,
+        topExercises: {},
+        totalWorkouts: {
+          2021: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+          _count: 0,
+          _chain: [],
+        },
+      });
+
+      await user.save();
+    }
+
+    const token = jwt.sign({ id: user._id }, keys);
+
+    console.log(token);
+
+    return {
+      token,
+      id: user.id,
+      isFeatured: user.isFeatured,
+      level: user.level,
+      picture: user.picture,
+      summaryStatistics: user.summaryStatistics,
+      topExercises: user.topExercises,
+      totalPounds: user.totalPounds,
+      totalWorkouts: user.totalWorkouts,
+      xp: user.xp,
+      xpHeatMap: user.xpHeatMap,
+      firstName,
+      lastName,
+      username: user.username,
+      email,
+    };
+  } catch (err) {
+    console.log("error", err);
     return { loggedIn: false };
   }
 };
@@ -183,4 +242,5 @@ module.exports = {
   verifyUser,
   validateToken,
   upsertGoogleUser,
+  upsertAppleUser,
 };
