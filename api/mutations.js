@@ -97,6 +97,20 @@ const mutation = new GraphQLObjectType({
         return AuthService.upsertGoogleUser(args);
       },
     },
+
+    upsertAppleUser: {
+      type: User_Type,
+      args: {
+        firstName: { type: GraphQLString },
+        lastName: { type: GraphQLString },
+        email: { type: GraphQLString },
+        appleId: { type: GraphQLString },
+      },
+      resolve(_, args) {
+        return AuthService.upsertAppleUser(args);
+      },
+    },
+
     saveRoutine: {
       type: Routine_Type,
       args: {
