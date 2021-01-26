@@ -156,6 +156,15 @@ const upsertGoogleUser = async (data) => {
     let user = await User.findOne({ googleId });
 
     if (!user) {
+      user = await User.findOne({ email });
+      if (user) {
+        user.googleId = googleId;
+
+        await user.save();
+      }
+    }
+
+    if (!user) {
       user = new User({
         firstName,
         lastName,
@@ -209,6 +218,15 @@ const upsertAppleUser = async (data) => {
     const { firstName, lastName, email, appleId } = data;
 
     let user = await User.findOne({ appleId });
+
+    if (!user) {
+      user = await User.findOne({ email });
+
+      if (user) {
+        user.appleId = appleId;
+        await user.save();
+      }
+    }
 
     if (!user) {
       user = new User({
@@ -267,9 +285,12 @@ const upsertFacebookUser = async (data) => {
 
     if (!user) {
       user = await User.findOne({ email });
-      user.facebookId = facebookId;
 
-      await user.save();
+      if (user) {
+        user.facebookId = facebookId;
+
+        await user.save();
+      }
     }
 
     if (!user) {
